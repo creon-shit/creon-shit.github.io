@@ -201,13 +201,137 @@
 
   .reveal{opacity:0;transform:translateY(22px)}
   .reveal.in{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+
+  /* ---------- 企鵝 🐧 ---------- */
+  /* 企鵝圖形只畫一次（放在 #peng-defs），其他地方用 <use> 引用 */
+  #peng-defs{position:absolute;width:0;height:0;overflow:hidden}
+  .peng-svg{display:block;overflow:visible}
+  .peng-jump{transform-box:view-box;transform-origin:60px 127px;
+    animation:peng-jump 1.05s cubic-bezier(.32,.72,.4,1) infinite}
+  .peng-shadow{fill:rgba(61,220,151,.22);transform-box:view-box;transform-origin:60px 132px;
+    animation:peng-shadow 1.05s cubic-bezier(.32,.72,.4,1) infinite}
+  /* 蹲 → 跳 → 落地壓扁，跳的高度改 translateY 的數字 */
+  @keyframes peng-jump{
+    0%  {transform:translateY(0)     scale(1,1)}
+    12% {transform:translateY(0)     scale(1.14,.84)}
+    30% {transform:translateY(-40px) scale(.93,1.1)}
+    46% {transform:translateY(-52px) scale(1,1)}
+    64% {transform:translateY(-34px) scale(.95,1.07)}
+    80% {transform:translateY(0)     scale(1.16,.82)}
+    90% {transform:translateY(0)     scale(.97,1.03)}
+    100%{transform:translateY(0)     scale(1,1)}
+  }
+  @keyframes peng-shadow{
+    0%,100%{transform:scaleX(1);opacity:.55}
+    12%{transform:scaleX(1.1);opacity:.62}
+    46%{transform:scaleX(.5);opacity:.16}
+    80%{transform:scaleX(1.14);opacity:.62}
+  }
+  @keyframes peng-flap-l{
+    0%,100%{transform:rotate(0)}
+    12%{transform:rotate(10deg)}
+    40%{transform:rotate(-34deg)}
+    64%{transform:rotate(-24deg)}
+    82%{transform:rotate(14deg)}
+  }
+  @keyframes peng-flap-r{
+    0%,100%{transform:rotate(0)}
+    12%{transform:rotate(-10deg)}
+    40%{transform:rotate(34deg)}
+    64%{transform:rotate(24deg)}
+    82%{transform:rotate(-14deg)}
+  }
+
+  /* 開場動畫 */
+  .intro{
+    position:fixed;inset:0;z-index:999;display:grid;place-items:center;
+    background:radial-gradient(620px 420px at 50% 44%,rgba(61,220,151,.11),transparent 70%),var(--bg);
+    transition:opacity .55s ease,visibility .55s ease;
+  }
+  .intro.out{opacity:0;visibility:hidden;pointer-events:none}
+  body.intro-on{overflow:hidden}
+  .intro-inner{display:flex;flex-direction:column;align-items:center;text-align:center}
+  .intro .peng-svg{width:min(150px,38vw);height:auto;filter:drop-shadow(0 18px 28px rgba(0,0,0,.6))}
+  .intro-line{font-family:var(--mono);font-size:13.5px;color:var(--accent);margin-top:6px}
+  .intro-cur{display:inline-block;width:8px;height:1em;background:var(--accent);
+    vertical-align:-2px;margin-left:4px;animation:blink 1s steps(1) infinite}
+  .intro-bar{width:min(210px,50vw);height:3px;border-radius:99px;margin-top:16px;
+    background:rgba(255,255,255,.09);overflow:hidden}
+  .intro-bar i{display:block;height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    animation:intro-fill 2.2s cubic-bezier(.35,0,.15,1) forwards}
+  @keyframes intro-fill{to{width:100%}}
+  .intro-skip{
+    position:absolute;right:22px;bottom:20px;font-family:var(--mono);font-size:12px;
+    color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;
+    padding:6px 14px;cursor:pointer;transition:.2s;
+  }
+  .intro-skip:hover{color:var(--accent);border-color:rgba(61,220,151,.45)}
+
+  /* 頁尾的小企鵝：平常輕輕晃，點一下才跳 */
+  .mascot{
+    display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+    cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;margin-bottom:10px;
+    --flap-l:none;--flap-r:none;--peng-dur:.95s;--peng-iter:1;
+  }
+  .mascot .peng-svg{width:76px;height:auto}
+  .mascot .peng-jump{animation:peng-idle 3.2s ease-in-out infinite}
+  .mascot .peng-shadow{animation:none;opacity:.3}
+  .mascot.hop{--flap-l:peng-flap-l;--flap-r:peng-flap-r}
+  .mascot.hop .peng-jump{animation:peng-jump .95s cubic-bezier(.32,.72,.4,1) 1}
+  .mascot.hop .peng-shadow{animation:peng-shadow .95s cubic-bezier(.32,.72,.4,1) 1}
+  @keyframes peng-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .mascot-hint{font-size:11.5px;font-family:var(--mono);color:var(--muted);opacity:.5;transition:.2s}
+  .mascot:hover .mascot-hint,.mascot:focus-visible .mascot-hint{opacity:1;color:var(--accent)}
+
   @media(prefers-reduced-motion:reduce){
     .reveal,.reveal.in{opacity:1;transform:none;transition:none}
     .bar i{transition:none}
+    .peng-jump,.peng-shadow,.mascot .peng-jump{animation:none}
+    .mascot{--flap-l:none;--flap-r:none}
   }
 </style>
 </head>
 <body>
+
+<!-- 企鵝的圖形本體（不會直接顯示，改企鵝長相就改這裡，改一次兩隻都會變） -->
+<svg id="peng-defs" aria-hidden="true"><defs><g id="peng-art">
+  <!-- 腳 -->
+  <path d="M45 112 Q36 126 48 127 Q59 127 56 113 Z" fill="#f7a13d"/>
+  <path d="M75 112 Q84 126 72 127 Q61 127 64 113 Z" fill="#f7a13d"/>
+  <!-- 翅膀（會拍動） -->
+  <path d="M30 60 Q13 78 20 102 Q30 93 34 74 Z" fill="#182131" stroke="rgba(255,255,255,.10)" stroke-width="1.4"
+    style="transform-box:view-box;transform-origin:31px 62px;animation-name:var(--flap-l,peng-flap-l);animation-duration:var(--peng-dur,1.05s);animation-timing-function:cubic-bezier(.32,.72,.4,1);animation-iteration-count:var(--peng-iter,infinite)"/>
+  <path d="M90 60 Q107 78 100 102 Q90 93 86 74 Z" fill="#182131" stroke="rgba(255,255,255,.10)" stroke-width="1.4"
+    style="transform-box:view-box;transform-origin:89px 62px;animation-name:var(--flap-r,peng-flap-r);animation-duration:var(--peng-dur,1.05s);animation-timing-function:cubic-bezier(.32,.72,.4,1);animation-iteration-count:var(--peng-iter,infinite)"/>
+  <!-- 身體 -->
+  <path d="M60 14 C36 14 26 38 26 68 C26 100 40 118 60 118 C80 118 94 100 94 68 C94 38 84 14 60 14 Z"
+    fill="#182131" stroke="rgba(255,255,255,.12)" stroke-width="1.6"/>
+  <!-- 白色臉+肚子 -->
+  <path d="M60 40 C45 40 37 58 37 82 C37 104 47 114 60 114 C73 114 83 104 83 82 C83 58 75 40 60 40 Z" fill="#eef3fa"/>
+  <!-- 眼睛 -->
+  <circle cx="51" cy="57" r="5.4" fill="#0b0f16"/>
+  <circle cx="69" cy="57" r="5.4" fill="#0b0f16"/>
+  <circle cx="52.9" cy="55.2" r="1.7" fill="#fff"/>
+  <circle cx="70.9" cy="55.2" r="1.7" fill="#fff"/>
+  <!-- 嘴巴 -->
+  <path d="M60 67 L70 73.5 L60 80 L50 73.5 Z" fill="#ffb454"/>
+  <path d="M50 73.5 L70 73.5 L60 80 Z" fill="#e8892a"/>
+</g></defs></svg>
+
+<!-- 開場動畫（沒有 JS 的話直接隱藏，不會擋住網站） -->
+<noscript><style>.intro{display:none}</style></noscript>
+<div class="intro" id="intro">
+  <div class="intro-inner">
+    <svg class="peng-svg" viewBox="0 -46 120 188" aria-hidden="true">
+      <ellipse class="peng-shadow" cx="60" cy="132" rx="30" ry="6"/>
+      <g class="peng-jump"><use href="#peng-art"/></g>
+    </svg>
+    <div class="intro-line">&gt; <span id="introMsg">booting creon.sh</span><span class="intro-cur"></span></div>
+    <div class="intro-bar"><i></i></div>
+  </div>
+  <button class="intro-skip" id="introSkip" type="button">skip →</button>
+</div>
 
 <nav>
   <div class="wrap">
@@ -372,6 +496,13 @@
 
 <footer>
   <div class="wrap">
+    <div class="mascot" id="mascot" role="button" tabindex="0" aria-label="戳一下企鵝">
+      <svg class="peng-svg" viewBox="0 -46 120 188" aria-hidden="true">
+        <ellipse class="peng-shadow" cx="60" cy="132" rx="30" ry="6"/>
+        <g class="peng-jump"><use href="#peng-art"/></g>
+      </svg>
+      <span class="mascot-hint">戳我一下 👆</span>
+    </div>
     <div>© <span id="yr"></span> Creon · Built with curiosity &amp; caffeine ☕</div>
     <div style="margin-top:6px;opacity:.6">Stay curious, stay secure.</div>
   </div>
@@ -379,6 +510,58 @@
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* 開場企鵝動畫 */
+  (function(){
+    /* 想改成「一個瀏覽器分頁只播一次」就把下面改成 true */
+    const ONCE_PER_SESSION = false;
+    /* 想改播多久（毫秒），改這個（進度條秒數在 CSS 的 intro-fill） */
+    const DURATION = 2400;
+
+    const intro = document.getElementById('intro');
+    if (!intro) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let seen = false;
+    try { seen = ONCE_PER_SESSION && sessionStorage.getItem('introSeen') === '1'; } catch(e){}
+    if (reduce || seen) { intro.remove(); return; }
+
+    document.body.classList.add('intro-on');
+    const msg = document.getElementById('introMsg');
+    const lines = ['booting creon.sh', 'loading penguin.exe', 'ready ✓'];
+    let i = 0;
+    const msgTimer = setInterval(() => {
+      if (++i < lines.length) msg.textContent = lines[i]; else clearInterval(msgTimer);
+    }, 750);
+
+    let done = false;
+    function end(){
+      if (done) return;
+      done = true;
+      clearInterval(msgTimer); clearTimeout(autoTimer);
+      intro.classList.add('out');
+      document.body.classList.remove('intro-on');
+      try { sessionStorage.setItem('introSeen', '1'); } catch(e){}
+      setTimeout(() => intro.remove(), 700);
+    }
+    const autoTimer = setTimeout(end, DURATION);
+    intro.addEventListener('click', end);
+    addEventListener('keydown', e => { if (e.key === 'Escape' || e.key === ' ') end(); });
+  })();
+
+  /* 頁尾小企鵝：點一下（或按 Enter）跳一下 */
+  (function(){
+    const m = document.getElementById('mascot');
+    if (!m) return;
+    function hop(){
+      if (m.classList.contains('hop')) return;
+      m.classList.add('hop');
+      setTimeout(() => m.classList.remove('hop'), 980);
+    }
+    m.addEventListener('click', hop);
+    m.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hop(); }
+    });
+  })();
 
   /* 打字動畫 */
   (function(){
