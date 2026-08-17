@@ -5,6 +5,7 @@
 - 線上位置：<https://creonlee.me>
 - 部落格 / Writeups：<https://blog.creonlee.me>（原始碼在 [creon-shit/blog](https://github.com/creon-shit/blog)）
 - 小恐龍：<https://dinosaur.creonlee.me>
+- 踩地雷：<https://mines.creonlee.me>（原始碼在 `mines.creonlee.me/`）
 
 ## 檔案
 
