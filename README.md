@@ -3,7 +3,9 @@
 個人自我介紹網站的原始碼。
 
 - 線上位置：<https://creonlee.app>
-- 部落格 / Writeups：<https://blog.creonlee.app>（原始碼在 [creon-shit/blog](https://github.com/creon-shit/blog)）
+- 生活動態：<https://blog.creonlee.app>（要登入才看得到私密貼文）
+- Writeups：<https://writeup.creonlee.app>（要登入）
+  兩個站是同一個 Cloudflare Worker，原始碼在 `creon-shit/blog`（private）
 - 小恐龍：<https://dinosaur.creonlee.app>
 - 踩地雷：<https://mines.creonlee.app>（原始碼在 [creon-shit/mines](https://github.com/creon-shit/mines)）
 
